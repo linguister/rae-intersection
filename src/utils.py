@@ -278,7 +278,7 @@ def limit_defs(www, limit_acep=None):
     list of tuple
         `www` con restricciones aplicadas.
     """
-    return [(word, acep) for word, acep in www if get_acep_num(acep) <= limit_acep] # Limita a acepciones con ordinal menor o igual que 'limit_acep'
+    return [(word, acep) for word, acep in www if get_acep_num(acep) <= limit_acep if limit_acep else 100] # Limita a acepciones con ordinal menor o igual que 'limit_acep'
 
 def pick_solutions(solutions, target_word, hints, avoid_common=False):
     """Decide si en las soluciones están las dificultades deseadas, en cuyo caso devuelve una muestra en orden para mostrar. La `target_word` no puede aparecer entre las soluciones.
