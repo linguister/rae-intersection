@@ -1,4 +1,3 @@
-from tqdm import tqdm
 import json, random
 
 # Para crear documentación: pdoc --html src/utils.py --force
@@ -180,7 +179,7 @@ def exclude_group(drae, group):
         Diccionario con términos del grupo excluídos. Si una palabra pierde todas sus acepciones se quita del diccionario.
     """
     words_to_remove = []
-    for word in tqdm(drae):
+    for word in drae:
         i = 0 # Índice de acepción a borrar
         j = 0 # Índice total de acepciones, para saber cuándo he llegado al final
         total_len = len(drae[word]['defs']) # Total de acepciones (en el momento inicial)
