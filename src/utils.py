@@ -389,14 +389,14 @@ def modify_def(target_word, definition, l=5):
     """
     modified_def = ''
     l = min(l, len(target_word) - 1) # Longitud de la comparación
-    words_in_def = definition.replace(',', ' ,').replace('.', ' .').split(' ')
+    words_in_def = definition.replace(',', ' ,').replace('.', ' .').replace(':', ' :').split(' ')
     for w in words_in_def:
         simplified_w = w.lower().replace('á', 'a').replace('é', 'e').replace('í', 'i').replace('ó', 'o').replace('ú', 'u') # Eliminar tildes
         if simplified_w[:l] == target_word.lower().replace('á', 'a').replace('é', 'e').replace('í', 'i').replace('ó', 'o').replace('ú', 'u')[:l]:
             modified_def += '■' + ' '
         else:
             modified_def += w + ' '
-    return modified_def.replace(' ,', ',').replace(' .', '.')
+    return modified_def.replace(' ,', ',').replace(' .', '.').replace(' :', ':')
             
 ABR_VERB = ['aux.', 'copulat.', 'impers.', 'intr.', 'prnl.', 'tr.', 'part.'] # Verbos
 ABR_SUST = ['f.', 'm.', 'n.'] # Sustantivos
