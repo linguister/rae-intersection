@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
-import copy
-
+import copy, random, time
 import src.utils as utils
 
 st.set_page_config(
@@ -18,6 +17,7 @@ st.set_page_config(
 # Title
 st.title("Denominador común")
 st.write("Un juego de ingenio en el que has de adivinar qué concepto tienen en común las palabras que se te presentan. La palabra a adivinar ha de escribirse en su forma singular y, en caso de tener género, en masculino.")
+st.write("Puedes **cambiar la dificultad** en cualquier momento y no se perderá tu progreso. ¡Intenta niveles más difíciles para ganar **más puntos**!")
 
 # Load dictionaries
 @st.cache_data(show_spinner=False) # Cache data so it doesn't have to be loaded every time
@@ -56,24 +56,25 @@ with st.spinner("Leyendo el diccionario..."):
     my_drae, my_df, df = load_dicts()
 
 ### Game
+if 'score' not in st.session_state:
+    st.session_state.score = 0
+    st.session_state.round = 1
 # Select difficulty
 def update_show_word():
     del st.session_state.show_word
 
-difficulty_names = {'easy': 'Paisano', 'normal': 'Cosmopolita', 'hard': 'Explorador'}
+difficulty_names = {'easy': 'Paisano (consigue hasta 15 puntos)', 'normal': 'Cosmopolita (consigue hasta 20 puntos)', 'hard': 'Explorador (consigue hasta 25 puntos)'}
+difficulty_max_score = {'easy': 15, 'normal': 20, 'hard': 25}
 difficulty = st.selectbox("Selecciona la dificultad:", list(difficulty_names.keys()), format_func=lambda x: difficulty_names[x], on_change=update_show_word) # On change generates a new word
 target_commonness = {'easy': 4, 'normal': 3, 'hard': 2}
 acep_limit = {'easy': 1, 'normal': 3, 'hard': None}
 hint_types = {'easy': [4, 4, 3, 3, 4, 3], 'normal': [4, 3, 2, 2, 3, 2], 'hard': [3, 2, 1, 0, 3, 2]}
 
-if st.button("Generar nueva palabra para jugar"):
-    for key in st.session_state.keys():
-        del st.session_state[key]
-
 # Get new word
 if 'show_word' not in st.session_state:
     st.session_state.hint2_checked = False
     st.session_state.hint3_checked = False
+    st.session_state.temp_score = difficulty_max_score[difficulty]
     with st.spinner("Buscando palabra objetivo..."):
         show_solutions = False
         common_word = ''
@@ -90,7 +91,7 @@ else:
     show_word = st.session_state.show_word
     show_solutions = st.session_state.show_solutions
 
-st.markdown("### Pistas")
+st.markdown(f"### Ronda {st.session_state.round}")
 st.markdown("#### Primera pista")
 st.markdown(f"- Primera letra: **{show_word[0].upper()}**")
 st.markdown('La pablabra aparece en la definición de:\n')
@@ -101,8 +102,11 @@ for i, (hint_word, hint_def, diff) in enumerate(show_solutions[:len(hint_types[d
 placeholder = show_word[0] + "_"
             
 st.markdown("#### Segunda pista")
-if st.checkbox("Mostrar segunda pista (_resta 5 puntos_)", value=st.session_state.hint2_checked):
-    st.session_state.hint2_checked = True
+if st.checkbox("Mostrar segunda pista (_resta 5 puntos_)", value=st.session_state.hint2_checked, disabled=True if st.session_state.hint2_checked else False):
+    if not st.session_state.hint2_checked: # If first time, disable checkbox, change score and rerun
+        st.session_state.hint2_checked = True
+        st.session_state.temp_score -= 5
+        st.rerun()
     st.markdown(f"- Última letra: **{show_word[-1].upper()}**")
     st.markdown('También aparece en la definición de:\n')
     hint_word, hint_def, diff = show_solutions[len(hint_types[difficulty]) - 2]
@@ -112,8 +116,11 @@ if st.checkbox("Mostrar segunda pista (_resta 5 puntos_)", value=st.session_stat
     placeholder = placeholder + show_word[-1]
 
 st.markdown("#### Tercera pista")
-if st.checkbox("Mostrar tercera pista (_resta 5 puntos_)", value=st.session_state.hint3_checked, disabled=True if not st.session_state.hint2_checked else False):
-    st.session_state.hint3_checked = True
+if st.checkbox("Mostrar tercera pista (_resta 5 puntos_)", value=st.session_state.hint3_checked, disabled=True if not st.session_state.hint2_checked else (True if st.session_state.hint3_checked else False)):
+    if not st.session_state.hint3_checked: # If first time, disable checkbox, change score and rerun
+        st.session_state.hint3_checked = True
+        st.session_state.temp_score -= 5
+        st.rerun()
     st.markdown(f"- Longitud de la palabra: **{len(show_word)}** letras")
     st.markdown('También aparece en la definición de:\n')
     hint_word, hint_def, diff = show_solutions[len(hint_types[difficulty]) - 1]
@@ -123,13 +130,43 @@ if st.checkbox("Mostrar tercera pista (_resta 5 puntos_)", value=st.session_stat
     placeholder = placeholder.replace('_', '_'*(len(show_word) - 2))
 
 # Answer
+round_finished = False
 st.markdown("### Averigua la palabra")
-answer = st.text_input("Escribe la palabra que creas que está en la definición de todas las anteriores:", value="", placeholder=placeholder).lower()
+answer = st.text_input(f"Por _**{st.session_state.temp_score} puntos**_, escribe la palabra que creas que está en la definición de todas las anteriores:", value="", placeholder=placeholder).lower()
 if answer == show_word:
     st.success("¡Correcto!")
-    st.toast('¡Bien hecho!', icon='🎉')
+    st.session_state.score += st.session_state.temp_score
+    round_finished = True
 else:
     if answer:
         st.error("¡Incorrecto! Inténtalo de nuevo.")
         if st.button("Me rindo 😔"):
             st.warning(f"La palabra era: **{show_word}**")
+            round_finished = True
+
+# Score
+cols = st.columns([1, 2, 1])
+with cols[1]:
+    st.markdown(f"### Puntuación: {st.session_state.score} puntos")
+    score_bar = st.progress(min(st.session_state.score, 100)) # 100 is the maximum score
+    # st.balloons()
+
+# Generate new word
+if round_finished: # If the round has finished, generate a new word
+    for key in st.session_state.keys():
+        if key not in ['score', 'round']: # Delete all keys except 'score' and 'round'
+            del st.session_state[key]
+    st.session_state.round += 1
+    time.sleep(1)
+    st.rerun()
+
+# End of game
+if st.session_state.score >= 100:
+    st.session_state.round -= 1
+    st.balloons()
+    st.success(f"¡Felicidades! Has completado el juego en **{st.session_state.round}** rondas.")
+    face_options = ['🙃', '🤔', '🙂', '😊']
+    if st.button(f"¿Jugar otra partida? {random.choice(face_options)}"):
+        st.session_state.score = 0
+        st.session_state.round = 1
+        st.rerun()
