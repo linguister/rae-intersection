@@ -9,6 +9,7 @@ st.set_page_config(
     page_icon="🔤",
     layout="centered",
     menu_items={
+        'Get help': "https://dirdam.github.io/contact.html",
         'About': """Este juego ha sido creado por [Adrián Jiménez Pascual](https://dirdam.github.io/)."""
     })
 
