@@ -7,14 +7,16 @@ import src.utils as utils
 st.set_page_config(
     page_title="Denominador común",
     page_icon="🔤",
-    layout="wide",
+    layout="centered",
     menu_items={
         'About': """Este juego ha sido creado por [Adrián Jiménez Pascual](https://dirdam.github.io/)."""
     })
 
+# TODO: mirar que pasa con las palabras como torero, ra
+
 # Title
 st.title("Denominador común")
-st.write("Un juego de ingenio en el que has de adivinar qué tienen en común las palabras que se te presentan.")
+st.write("Un juego de ingenio en el que has de adivinar qué concepto tienen en común las palabras que se te presentan. La palabra a adivinar ha de escribirse en su forma singular y, en caso de tener género, en masculino.")
 
 # Load dictionaries
 @st.cache_data(show_spinner=False) # Cache data so it doesn't have to be loaded every time
@@ -88,8 +90,6 @@ else:
     show_solutions = st.session_state.show_solutions
 
 st.markdown("### Pistas")
-# col1, col2, col3 = st.columns([1, 1, 1]) # Divides the screen in 3 columns
-# with col1:
 st.markdown("#### Primera pista")
 st.markdown(f"- Primera letra: **{show_word[0].upper()}**")
 st.markdown('La pablabra aparece en la definición de:\n')
@@ -99,9 +99,8 @@ for i, (hint_word, hint_def, diff) in enumerate(show_solutions[:len(hint_types[d
         st.write(f"{hint_def}")
 placeholder = show_word[0] + "_"
             
-# with col2:
 st.markdown("#### Segunda pista")
-if st.checkbox("Mostrar segunda pista", value=st.session_state.hint2_checked):
+if st.checkbox("Mostrar segunda pista (_resta 5 puntos_)", value=st.session_state.hint2_checked):
     st.session_state.hint2_checked = True
     st.markdown(f"- Última letra: **{show_word[-1].upper()}**")
     st.markdown('También aparece en la definición de:\n')
@@ -111,9 +110,8 @@ if st.checkbox("Mostrar segunda pista", value=st.session_state.hint2_checked):
         st.write(f"{hint_def}")
     placeholder = placeholder + show_word[-1]
 
-# with col3:
 st.markdown("#### Tercera pista")
-if st.checkbox("Mostrar tercera pista", value=st.session_state.hint3_checked, disabled=True if not st.session_state.hint2_checked else False):
+if st.checkbox("Mostrar tercera pista (_resta 5 puntos_)", value=st.session_state.hint3_checked, disabled=True if not st.session_state.hint2_checked else False):
     st.session_state.hint3_checked = True
     st.markdown(f"- Longitud de la palabra: **{len(show_word)}** letras")
     st.markdown('También aparece en la definición de:\n')
