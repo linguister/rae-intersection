@@ -158,6 +158,7 @@ if round_finished: # If the round has finished, generate a new word
             del st.session_state[key]
     st.session_state.round += 1
     time.sleep(1)
+    answer = ''
     st.rerun()
 
 # End of game
