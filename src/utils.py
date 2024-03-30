@@ -203,7 +203,7 @@ def exclude_group(drae, group):
     return drae
 
 def get_random_word(df, commonness=None, appear_lim=None):
-    """Selecciona palabra aleatoria de rareza `commonness` y límite de acepciones `appear_lim`.
+    """Selecciona palabra aleatoria de rareza `commonness` y límite inferior de apariciones `appear_lim`.
 
     Args
     ----------
@@ -212,7 +212,7 @@ def get_random_word(df, commonness=None, appear_lim=None):
     commonness : None or int
         Número del `1` al `4` (`0` y `5` suelen estar excluídos).
     appear_lim : None or int
-        Número límite de acepciones en las que la palabra puede aparecer.
+        Número mínimo de apariciones en las que la palabra puede aparecer.
 
     Returns
     -------
