@@ -32,7 +32,8 @@ with st.sidebar:
         - _**Denominador común**_ es un juego de ingenio en el que has de adivinar **qué palabra tienen en común** las definiciones de las palabras que se te presentan. 
             - Puede que cada definición use un significado distinto de la palabra objetivo (_polisemia_).
         - La palabra a adivinar siempre es un **sustantivo** y ha de escribirse en su forma _singular_ y, en caso de tener género, en _masculino_. (Es decir, como aparecería en el diccionario).
-        - La **dificultad** sólo se puede eligir al principio de cada partida. Dificultades más altas se recompensan con **más puntos**.""")
+        - La **dificultad** sólo se puede eligir al principio de cada partida. Dificultades más altas se recompensan con **más puntos**.
+            - Para cambiar de dificultad a mitad de partida carga de nuevo la página. Tu progreso se perderá.""")
 
 # Load dictionaries
 @st.cache_data(show_spinner=False) # Cache data so it doesn't have to be loaded every time
@@ -45,6 +46,7 @@ def load_dicts():
     ### Operate with the dictionary
     # Remove all words that can have varios `kinds`
     my_df = utils.leave_single_kind(my_df)
+    ########################## "muestra", "habla"??????????
 
     # Remove extremely common words (they are like wildcard words)
     # my_df = my_df[my_df['commonness'] != 4]
@@ -137,10 +139,11 @@ for i, (hint_word, hint_def, diff) in enumerate(st.session_state.show_solutions[
 placeholder = st.session_state.show_word[0].upper() + ' _'*(len(st.session_state.show_word) - 1) # First letter and length
             
 st.markdown("#### Segunda pista")
-if st.checkbox("Mostrar segunda pista (_resta **5** puntos_)", value=st.session_state.hint2_checked, disabled=True if st.session_state.hint2_checked else False):
+losing_points = difficulty_max_score[difficulty]//3
+if st.checkbox(f"Mostrar segunda pista (_resta **{losing_points}** puntos_)", value=st.session_state.hint2_checked, disabled=True if st.session_state.hint2_checked else False):
     if not st.session_state.hint2_checked: # If first time, disable checkbox, change score and rerun
         st.session_state.hint2_checked = True
-        st.session_state.temp_score -= 5
+        st.session_state.temp_score -= losing_points
         st.rerun()
     st.markdown(f"- Última letra: {placeholder[:-1]}**{st.session_state.show_word[-1].upper()}**")
     st.markdown('También aparece en la definición de:\n')
@@ -151,10 +154,11 @@ if st.checkbox("Mostrar segunda pista (_resta **5** puntos_)", value=st.session_
     placeholder = placeholder[:-1] + st.session_state.show_word[-1].upper() # Last letter
 
 st.markdown("#### Tercera pista")
-if st.checkbox("Mostrar tercera pista (_resta **5** puntos_)", value=st.session_state.hint3_checked, disabled=True if not st.session_state.hint2_checked else (True if st.session_state.hint3_checked else False)):
+losing_points = difficulty_max_score[difficulty]//2 - difficulty_max_score[difficulty]//3
+if st.checkbox(f"Mostrar tercera pista (_resta **{losing_points}** puntos_)", value=st.session_state.hint3_checked, disabled=True if not st.session_state.hint2_checked else (True if st.session_state.hint3_checked else False)):
     if not st.session_state.hint3_checked: # If first time, disable checkbox, change score and rerun
         st.session_state.hint3_checked = True
-        st.session_state.temp_score -= 5
+        st.session_state.temp_score -= losing_points
         st.rerun()
     st.markdown(f"- Anagrama de la palabra: **{st.session_state.shuffled_letters}**")
     # st.markdown('También aparece en la definición de:\n')
