@@ -10,7 +10,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
     menu_items={
         'Get help': "https://dirdam.github.io/contact.html",
-        'About': """Este juego ha sido creado por [Adrián Jiménez Pascual](https://dirdam.github.io/)."""
+        'About': """Este juego ha sido ideado y programado por [Adrián Jiménez Pascual](https://dirdam.github.io/)."""
     })
 
 # Session states
@@ -83,16 +83,16 @@ def update_show_word():
     if 'show_word' in st.session_state:
         del st.session_state.show_word
 
-difficulty_max_score = {'easy': 15, 'normal': 20, 'hard': 25, 'extreme': 30, 'impossible': 50}
+difficulty_max_score = {'easy': 15, 'normal': 20, 'hard': 25, 'extreme': 35, 'impossible': 50}
 difficulty_names = {'easy': 'Aldeano', 'normal': 'Paisano', 'hard': 'Cosmopolita', 'extreme': 'Explorador', 'impossible': 'Kamikaze'}
 difficulty_desc = {'easy': f"{difficulty_names['easy']} (rondas de {difficulty_max_score['easy']} puntos)", 
                     'normal': f"{difficulty_names['normal']} (rondas de {difficulty_max_score['normal']} puntos)", 
                     'hard': f"{difficulty_names['hard']} (rondas de {difficulty_max_score['hard']} puntos)", 
                     'extreme': f"{difficulty_names['extreme']} (rondas de {difficulty_max_score['extreme']} puntos)",
                     'impossible': f"{difficulty_names['impossible']} (rondas de {difficulty_max_score['impossible']} puntos)"}
-target_commonness = {'easy': 4, 'normal': 3, 'hard': 3, 'extreme': 2, 'impossible': 1}
-acep_limit = {'easy': 1, 'normal': 1, 'hard': 3, 'extreme': 3, 'impossible': None} # Límite de acepciones de la palabra objetivo (cuantas menos acepciones tenga menos variables sus usos)
-hint_types = {'easy': [4, 4, 3, 4], 'normal': [4, 4, 3, 4], 'hard': [4, 3, 2, 3], 'extreme': [2, 2, 1, 0, 3], 'impossible': [2, 2, 1, 0, 3]}
+target_commonness = {'easy': 4, 'normal': 3, 'hard': 2, 'extreme': 2, 'impossible': 1}
+acep_limit = {'easy': 1, 'normal': 1, 'hard': 3, 'extreme': 5, 'impossible': None} # Límite de acepciones de la palabra objetivo (cuantas menos acepciones tenga menos variables sus usos)
+hint_types = {'easy': [4, 4, 3, 4], 'normal': [4, 4, 3, 4], 'hard': [4, 3, 2, 3], 'extreme': [2, 2, 1, 0, 3], 'impossible': [2, 1, 1, 0, 3]}
 if not st.session_state.difficulty:
     difficulty = st.selectbox("Selecciona la dificultad:", list(difficulty_desc.keys()), index=None, format_func=lambda x: difficulty_desc[x], on_change=update_show_word) # On change generates a new word
     if difficulty: # When chosen, set as difficulty for the rest of the game
