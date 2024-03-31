@@ -24,7 +24,7 @@ st.set_page_config(
 
 # Title
 st.title("Denominador común")
-st.write("Abre la pestaña de arriba a la izquierda (`>`) para leer las instrucciones.")
+st.write("Abre la pestaña de arriba a la izquierda (`>`) si necesitas leer las instrucciones.")
 
 with st.sidebar:
     st.markdown("# Explicación")
