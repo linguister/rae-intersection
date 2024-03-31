@@ -72,7 +72,7 @@ with st.spinner("Leyendo el diccionario..."):
 
 ### Game
 if 'score' not in st.session_state:
-    st.session_state.score = 90
+    st.session_state.score = 0
     st.session_state.round = 0
     st.session_state.difficulty = None
     st.session_state.game_ended = False
