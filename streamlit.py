@@ -83,15 +83,16 @@ def update_show_word():
     if 'show_word' in st.session_state:
         del st.session_state.show_word
 
-difficulty_max_score = {'easy': 15, 'normal': 20, 'hard': 25, 'extreme': 30}
-difficulty_names = {'easy': 'Aldeano', 'normal': 'Paisano', 'hard': 'Cosmopolita', 'extreme': 'Explorador'}
+difficulty_max_score = {'easy': 15, 'normal': 20, 'hard': 25, 'extreme': 30, 'impossible': 50}
+difficulty_names = {'easy': 'Aldeano', 'normal': 'Paisano', 'hard': 'Cosmopolita', 'extreme': 'Explorador', 'impossible': 'Kamikaze'}
 difficulty_desc = {'easy': f"{difficulty_names['easy']} (rondas de {difficulty_max_score['easy']} puntos)", 
                     'normal': f"{difficulty_names['normal']} (rondas de {difficulty_max_score['normal']} puntos)", 
                     'hard': f"{difficulty_names['hard']} (rondas de {difficulty_max_score['hard']} puntos)", 
-                    'extreme': f"{difficulty_names['extreme']} (rondas de {difficulty_max_score['extreme']} puntos)"}
-target_commonness = {'easy': 4, 'normal': 3, 'hard': 3, 'extreme': 2}
-acep_limit = {'easy': 1, 'normal': 1, 'hard': 3, 'extreme': 3} # Límite de acepciones de la palabra objetivo (cuantas menos acepciones tenga menos variables sus usos)
-hint_types = {'easy': [4, 4, 3, 4], 'normal': [4, 4, 3, 4], 'hard': [4, 3, 2, 3], 'extreme': [2, 2, 1, 0, 3]}
+                    'extreme': f"{difficulty_names['extreme']} (rondas de {difficulty_max_score['extreme']} puntos)",
+                    'impossible': f"{difficulty_names['impossible']} (rondas de {difficulty_max_score['impossible']} puntos)"}
+target_commonness = {'easy': 4, 'normal': 3, 'hard': 3, 'extreme': 2, 'impossible': 1}
+acep_limit = {'easy': 1, 'normal': 1, 'hard': 3, 'extreme': 3, 'impossible': None} # Límite de acepciones de la palabra objetivo (cuantas menos acepciones tenga menos variables sus usos)
+hint_types = {'easy': [4, 4, 3, 4], 'normal': [4, 4, 3, 4], 'hard': [4, 3, 2, 3], 'extreme': [2, 2, 1, 0, 3], 'impossible': [2, 2, 1, 0, 3]}
 if not st.session_state.difficulty:
     difficulty = st.selectbox("Selecciona la dificultad:", list(difficulty_desc.keys()), index=None, format_func=lambda x: difficulty_desc[x], on_change=update_show_word) # On change generates a new word
     if difficulty: # When chosen, set as difficulty for the rest of the game
@@ -124,14 +125,14 @@ if 'show_word' not in st.session_state and not st.session_state.game_ended:
     st.session_state.round += 1
     st.session_state.conceded = False
     print(show_word)
-    shuffled_letters = [l.upper() for l in show_word]
+    shuffled_letters = [l.upper() for l in show_word[1:-1]]
     random.shuffle(shuffled_letters)
-    st.session_state.shuffled_letters = ' '.join(shuffled_letters)
+    st.session_state.shuffled_letters = ' '.join([show_word[0].upper()] + shuffled_letters + [show_word[-1].upper()])
 
 st.markdown(f"### Ronda {st.session_state.round}")
 st.markdown("#### Primera pista")
 st.markdown(f"- Primera letra: **{st.session_state.show_word[0].upper()}**{' _'*(len(st.session_state.show_word) - 1)}")
-st.markdown('La pablabra aparece en la definición de:\n')
+st.markdown('La palabra aparece en la definición de:\n')
 for i, (hint_word, hint_def, diff) in enumerate(st.session_state.show_solutions[:len(hint_types[difficulty]) - 1]):
     hint_def = utils.modify_def(st.session_state.show_word, hint_def)
     with st.expander(f"**{hint_word}**"):
@@ -160,7 +161,7 @@ if st.checkbox(f"Mostrar tercera pista (_resta **{losing_points}** puntos_)", va
         st.session_state.hint3_checked = True
         st.session_state.temp_score -= losing_points
         st.rerun()
-    st.markdown(f"- Anagrama de la palabra: **{st.session_state.shuffled_letters}**")
+    st.markdown(f"- Anagrama de la palabra: **{st.session_state.shuffled_letters[0]}** {st.session_state.shuffled_letters[1:-1]} **{st.session_state.shuffled_letters[-1]}**")
     # st.markdown('También aparece en la definición de:\n')
     # hint_word, hint_def, diff = st.session_state.show_solutions[len(hint_types[difficulty]) - 1]
     # hint_def = utils.modify_def(st.session_state.show_word, hint_def)
