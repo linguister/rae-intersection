@@ -178,7 +178,7 @@ with ans_cols[0]:
     answer = answer.replace(' ', '') # Remove spaces
 with ans_cols[1]:
     st.markdown('')
-    st.button("Probar")
+    st.button("Probar", use_container_width=True)
 
 if answer == st.session_state.show_word:
     st.success("¡Correcto!")
