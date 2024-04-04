@@ -172,13 +172,9 @@ if st.checkbox(f"Mostrar tercera pista (_resta **{losing_points}** puntos_)", va
 # Answer
 st.markdown("### Averigua la palabra")
 st.markdown(f"Jugando por: **{st.session_state.temp_score}** puntos.")
-ans_cols = st.columns([2, 1])
-with ans_cols[0]:
-    answer = st.text_input(f"Escribe la palabra que creas que está en la definición de todas las anteriores:", value="", placeholder=placeholder).lower()
-    answer = answer.replace(' ', '') # Remove spaces
-with ans_cols[1]:
-    st.markdown('')
-    st.button("Probar", use_container_width=True)
+answer = st.text_input(f"Escribe la palabra que creas que está en la definición de todas las anteriores:", value="", placeholder=placeholder).lower()
+answer = answer.replace(' ', '') # Remove spaces
+st.button("Probar", use_container_width=True, type='primary')
 
 if answer == st.session_state.show_word:
     st.success("¡Correcto!")
@@ -188,7 +184,7 @@ else:
     if not st.session_state.conceded:
         if answer:
             st.error("¡Incorrecto! Inténtalo de nuevo.")
-            if st.button("Me rindo 😔"):
+            if st.button("Me rindo 😔", use_container_width=True):
                 st.session_state.conceded = True
                 st.rerun()
     else:
@@ -199,7 +195,7 @@ else:
 if st.session_state.round_finished: # If the round has finished
     del st.session_state['show_word'] # Delete the word so a new one is generated
     if st.session_state.score < 100: # If not end of game, start a new round / generate a new word
-        st.button('Siguiente palabra') # Just clicking means rerun
+        st.button('Siguiente palabra', use_container_width=True) # Just clicking means rerun
     else:
         st.session_state.game_ended = True
 
@@ -216,4 +212,4 @@ if st.session_state.game_ended: # If game ended
     del st.session_state.score
     del st.session_state.game_ended
     face = random.choice(['🙃', '🤔', '🙂', '😊'])
-    st.button(f"¿Jugar otra partida? {face}") # Just clicking means rerun
+    st.button(f"¿Jugar otra partida? {face}", use_container_width=True) # Just clicking means rerun
