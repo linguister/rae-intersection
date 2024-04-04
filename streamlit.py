@@ -172,7 +172,13 @@ if st.checkbox(f"Mostrar tercera pista (_resta **{losing_points}** puntos_)", va
 # Answer
 st.markdown("### Averigua la palabra")
 st.markdown(f"Jugando por: **{st.session_state.temp_score}** puntos.")
-answer = st.text_input(f"Escribe la palabra que creas que está en la definición de todas las anteriores:", value="", placeholder=placeholder).lower()
+ans_cols = st.columns([2, 1])
+with ans_cols[0]:
+    answer = st.text_input(f"Escribe la palabra que creas que está en la definición de todas las anteriores:", value="", placeholder=placeholder).lower()
+    answer = answer.replace(' ', '') # Remove spaces
+with ans_cols[1]:
+    st.markdown('')
+    st.button("Probar")
 
 if answer == st.session_state.show_word:
     st.success("¡Correcto!")
