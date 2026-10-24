@@ -36,10 +36,11 @@ with st.sidebar:
             - Para cambiar de dificultad a mitad de partida carga de nuevo la página. Tu progreso se perderá.""")
 
 # Load dictionaries
+update = '2024'
 @st.cache_data(show_spinner=False) # Cache data so it doesn't have to be loaded every time
 def load_dicts():
-    drae = utils.load_dict('data/diccionario.json')
-    df = pd.read_csv('data/diccionario_df.csv')
+    drae = utils.load_dict(f'data/diccionario_{update}.json')
+    df = pd.read_csv(f'data/diccionario_{update}_df.csv')
     my_drae = copy.deepcopy(drae)
     my_df = df.copy()    
 
